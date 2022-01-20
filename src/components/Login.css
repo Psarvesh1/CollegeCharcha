@@ -1,0 +1,76 @@
+.mainContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background-image: url('../assets/credentials.png');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.mainContainer form{
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    align-self: center;
+    justify-self: center;
+}
+.loginContainer{
+    display: flex;
+    flex-direction: column;
+    /* width: 25%; */
+    height: auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 5px;
+    text-align: center;
+}
+.loginContainer h1{
+    color: #b92b27;
+    margin: 5px 0;
+}
+.loginContainer h4{
+    padding: 0;
+    margin: 10px 0;
+}
+.loginContainer h5{
+    background: #ffffff;
+    opacity: 0.6;
+    font-weight: 500;
+}
+.loginContainer h5:hover{
+    cursor: pointer;
+}
+.buttonContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #D3D3D3;
+    padding-bottom: 5px;
+}
+.forgotBtn{
+    outline: none;
+    border-width: 0px;
+    background-color: transparent;
+    padding: 0px;
+    font-weight: 550;
+    color: #A9A9A9;
+}
+.forgotBtn:hover{
+    cursor: pointer;
+    
+}
+.loginBtn{
+    height: 38px;
+    background-color: #2e69ff;
+    border-width: 0px;
+    padding: 0px 20px;
+    position: relative;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: 600;
+}
+.loginBtn:hover{
+    cursor: pointer;
+}
