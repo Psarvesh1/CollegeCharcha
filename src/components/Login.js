@@ -1,9 +1,12 @@
-import React, { Component } from "react";
+import React, { useState , useContext, useEffect} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"
 import "./Login.css";
+import { UserContext } from "../state/UserContext";
+import {jwt} from 'jsonwebtoken';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,15 +16,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = () => {
+  const Login = () => {
   const navigate = useNavigate();
+  
+  const prevToken = localStorage.getItem('auth-token')
+  // useEffect(()=> {
+  //   try{
+  //     const verifyToken = jwt.verify(prevToken, process.env.token)
+  //     if(verifyToken)
+  //     navigate('/home')
+  //   }catch(err){
+  //     console.log(err)
+  //   }
+  // })
+
+  const {authState, setAuthState} = useContext(UserContext)
+  
   const classes = useStyles();
+  const [user, setUser] = useState({email: '',  password: ''})
+  const { register, handleSubmit, errors } = useForm();
+  const [error, setError] = useState('')
+  const onSubmit = async() => {
+    await axios({ method: 'post', url : 'http://localhost:3001/api/user/login', headers: {'Content-Type': 'application/json'},data: user })
+    .then((res) => {
+        console.log(res.data)
+        const token = res.data
+        localStorage.setItem("auth-token", token)
+        // setAuthState(...authState, {token: token})
+        navigate('/home')
+    }).catch((err) => {
+        // console.log(err.response.data)
+        // setError(err.response.data)
+    })
+  };
   return (
     <div className="mainContainer">
       <div className="loginContainer">
         <h1>College Charcha</h1>
         <h4>A place to share knowledge and better understand the world!</h4>
-        <form className={classes.root} noValidate autoComplete="off">
+        <form className={classes.root} noValidate autoComplete="off" onSubmit = {handleSubmit(onSubmit)}>
           <div
             style={{
               textAlign: "left",
@@ -31,19 +64,38 @@ const Login = () => {
           >
             Login
           </div>
-          <TextField id="outlined-basic" label="Username" variant="outlined" />
-          <TextField id="outlined-basic" label="Password" variant="outlined" />
+          <TextField
+            id="outlined-basic"
+            label="Email"
+            variant="outlined"
+            placeholder="Enter Your Email id"
+            required={true}
+            onChange={e => setUser({ ...user, email: e.target.value })}
+            name="email"
+            inputRef={register({
+              required: "email is required.",
+            })}
+            error={Boolean(errors.email)}
+            helperText={errors.email?.message}
+          />
+          <TextField
+            id="outlined-basic"
+            label="Password (Minimum 6 charachters)"
+            variant="outlined"
+            required={true}
+            onChange={e => setUser({ ...user, password: e.target.value })}
+            name="password"
+            inputRef={register({
+              required: "Password is required.",
+            })}
+            error={Boolean(errors.password)}
+            helperText={errors.password?.message}
+          />
           <div className="buttonContainer">
             <button className="forgotBtn">Forgot Password?</button>
-            {/* <Button variant="contained" color="primary" size="medium">
-              Primary
-            </Button>
-             */}
-            <button className="loginBtn" onClick = {()=> {
-              navigate('/home')
-            }}>Login</button>
+            <input className="loginBtn" type = "submit" value = "Login"/>
           </div>
-          <button className="forgotBtn" onClick={()=> navigate('/register')}>
+          <button className="forgotBtn" onClick={() => navigate('/register')}>
             Don't have an account? Create one.
           </button>
         </form>

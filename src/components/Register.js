@@ -1,8 +1,10 @@
 import React, { Component, useState } from "react";
+import axios from "axios"
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+
 import "./Login.css";
 
 const useStyles = makeStyles((theme) => ({
@@ -18,22 +20,25 @@ const Register = () => {
 
     const { register, handleSubmit, errors } = useForm();
 
-    const [user, setUser] = useState({name: '', username: '', password: '', cpassword: '', Key: ''})
+    const [user, setUser] = useState({name: '', email: '', password: '', cpassword: ''})
 
-    const onSubmit = () => {
-        console.log(user)
-        navigate('/')
+    const [error, setError] = useState('')
+
+    const navigate = useNavigate(); 
+
+    const onSubmit = async() => {
+        await axios({ method: 'post', url : 'http://localhost:3001/api/user/register', headers: {'Content-Type': 'application/json'},data: user })
+        .then((res) => {
+            console.log(res.data.email)
+            navigate('/otp-verification', {state: {email: res.data.email}})
+        }).catch((err) => {
+            console.log(err.response.data)
+            setError(err.response.data)
+        })
     };
 
-    const handleRegister = e => {
-        e.preventDefault();
-        if(user.name === '' || user.username === '' || user.password === '' || user.cpassword === '' || user.Key === ''){
-            console.log('please fill all required fields')
-        }else{
-            console.log(user)
-        }
-    }
-    const navigate = useNavigate();
+    
+    
     return (
         <div className="mainContainer">
             <div className="loginContainer">
@@ -67,18 +72,19 @@ const Register = () => {
                         id="outlined-basic"
                         label="Username"
                         variant="outlined"
+                        placeholder="Enter Your Email id"
                         required={true}
-                        onChange= {e => setUser({...user, username: e.target.value})}
-                        name="userName"
+                        onChange= {e => setUser({...user, email: e.target.value})}
+                        name="email"
                         inputRef={register({
-                        required: "Username is required.",
+                        required: "email is required.",
                         })}
-                        error={Boolean(errors.userName)}
-                        helperText={errors.userName?.message}
+                        error={Boolean(errors.email)}
+                        helperText={errors.email?.message}
                     />
                     <TextField
                         id="outlined-basic"
-                        label="New Password"
+                        label="New Password (Minimum 6 charachters)"
                         variant="outlined"
                         required={true}
                         onChange= {e => setUser({...user, password: e.target.value})}
@@ -102,21 +108,8 @@ const Register = () => {
                         error={Boolean(errors.cpassword)}
                         helperText={errors.cpassword?.message}
                     />
-                    <TextField
-                        id="outlined-basic"
-                        label="Secret key"
-                        variant="outlined"
-                        placeholder="Given by college admin"
-                        required={true}
-                        onChange= {e => setUser({...user, Key: e.target.value})}
-                        name="key"
-                        inputRef={register({
-                            required: "Secret key is required.",
-                        })}
-                        error={Boolean(errors.key)}
-                        helperText={errors.key?.message}
-                    />
                     <div className="buttonContainer" style={{ justifyContent: "center" }}>
+                    {error && <h1>{error}</h1>}
                     <input className="loginBtn" type = "submit" value = "Register"/>
                     </div>
                     <button className="forgotBtn" onClick = {()=> navigate('/')}>
