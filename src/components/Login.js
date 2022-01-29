@@ -5,8 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"
 import "./Login.css";
-import { UserContext } from "../state/UserContext";
-import {jwt} from 'jsonwebtoken';
+import { useAuth } from "../state/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,24 +13,11 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
-}));
-
+  }));
+  
   const Login = () => {
   const navigate = useNavigate();
-  
-  const prevToken = localStorage.getItem('auth-token')
-  // useEffect(()=> {
-  //   try{
-  //     const verifyToken = jwt.verify(prevToken, process.env.token)
-  //     if(verifyToken)
-  //     navigate('/home')
-  //   }catch(err){
-  //     console.log(err)
-  //   }
-  // })
-
-  const {authState, setAuthState} = useContext(UserContext)
-  
+  const {loggedIn, setLoggedIn} = useAuth()
   const classes = useStyles();
   const [user, setUser] = useState({email: '',  password: ''})
   const { register, handleSubmit, errors } = useForm();
@@ -42,8 +28,7 @@ const useStyles = makeStyles((theme) => ({
         console.log(res.data)
         const token = res.data
         localStorage.setItem("auth-token", token)
-        // setAuthState(...authState, {token: token})
-        navigate('/home')
+        setLoggedIn(true)
     }).catch((err) => {
         // console.log(err.response.data)
         // setError(err.response.data)
